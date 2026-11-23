@@ -1,9 +1,30 @@
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 
 function AdminPage() {
-  const [foods, setFoods] = useState([]);
+const navigate = useNavigate();
+
+  useEffect(() => {
+
+    const role =
+      localStorage.getItem("userRole");
+
+    const token =
+      localStorage.getItem("token");
+
+    if (
+      role !== "admin" ||
+      !token
+    ) {
+      navigate("/login");
+    }
+
+  }, [navigate]);
+
+  const [foods, setFoods] =
+    useState([]);
 
   const [editingId, setEditingId] =
     useState(null);
@@ -29,6 +50,7 @@ function AdminPage() {
       .catch((error) => {
         console.error(error);
       });
+      
   };
 
   useEffect(() => {
@@ -319,5 +341,4 @@ function AdminPage() {
     </>
   );
 }
-
 export default AdminPage;

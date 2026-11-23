@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 
 function LoginPage() {
@@ -11,31 +12,75 @@ function LoginPage() {
   const [password, setPassword] =
     useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    try {
 
-    if (
-      email === "admin@quickbite.com" &&
-      password === "admin123"
-    ) {
-      alert("Admin Login Successful ✅");
+      const response =
+        await axios.post(
+          "http://localhost:8080/api/users/login",
+          {
+            email,
+            password,
+          }
+        );
 
-      navigate("/admin");
+        const token = response.data.token;
+        const role = response.data.role;
 
-      return;
+      if (role === "ADMIN") {
+
+        localStorage.setItem(
+            "token",
+             token
+            );
+
+        localStorage.setItem(
+            "userRole",
+            "admin"
+            );
+
+        alert(
+          "Admin Login Successful ✅"
+        );
+
+        navigate("/admin");
+
+        return;
+      }
+
+      if (role === "USER") {
+
+        localStorage.setItem(
+  "token",
+  token
+);
+
+localStorage.setItem(
+  "userRole",
+  "user"
+);
+
+        alert(
+          "User Login Successful ✅"
+        );
+
+        navigate("/");
+
+        return;
+      }
+
+      alert(
+        "Invalid Credentials ❌"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Login Failed ❌"
+      );
     }
-
-    if (
-      email === "user@quickbite.com" &&
-      password === "user123"
-    ) {
-      alert("User Login Successful ✅");
-
-      navigate("/");
-
-      return;
-    }
-
-    alert("Invalid Credentials ❌");
   };
 
   return (
@@ -139,22 +184,14 @@ function LoginPage() {
 
           <div
             style={{
-              marginTop: "25px",
-              fontSize: "14px",
+              marginTop: "20px",
+              textAlign: "center",
               color: "#94a3b8",
+              fontSize: "14px",
             }}
           >
-            <p>
-              Admin:
-              admin@quickbite.com /
-              admin123
-            </p>
-
-            <p>
-              User:
-              user@quickbite.com /
-              user123
-            </p>
+            Login using your registered
+            database account.
           </div>
         </div>
       </div>
